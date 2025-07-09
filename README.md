@@ -2,14 +2,17 @@
 
 [![Build Status](https://github.com/samaritan-dev/test-docx/actions/workflows/ci.yml/badge.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/ci.yml)
 [![Test Status](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml/badge.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml)
-[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+[![Extensive UI Tests](https://github.com/samaritan-dev/test-docx/actions/workflows/extensive-ui-tests.yml/badge.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/extensive-ui-tests.yml)
+[![Python Version](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Coverage](https://codecov.io/gh/samaritan-dev/test-docx/branch/main/graph/badge.svg)](https://codecov.io/gh/samaritan-dev/test-docx)
 [![Security](https://img.shields.io/badge/security-scanned-brightgreen.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml)
 [![Standalone](https://img.shields.io/badge/standalone-executable-orange.svg)](README_STANDALONE.md)
+[![Accessibility](https://img.shields.io/badge/accessibility-WCAG%202.1-compliant-brightgreen.svg)](tests/test_accessibility.py)
+[![Cross Browser](https://img.shields.io/badge/cross--browser-Chrome%2CFirefox%2CEdge-blue.svg)](tests/test_ui_extensive.py)
 
-A Windows background service that automatically monitors your Downloads folder and converts HTML files to DOCX format as soon as they are downloaded. Available in both Python and standalone executable versions.
+A Windows background service that automatically monitors your Downloads folder and converts HTML files to DOCX format as soon as they are downloaded. Available in both Python and standalone executable versions with comprehensive testing suite.
 
 ## 🎯 **Two Installation Options**
 
@@ -25,6 +28,7 @@ A Windows background service that automatically monitors your Downloads folder a
 - **Requires Python** - For developers and advanced users
 - **Customizable** - Easy to modify and extend
 - **Source code access** - Full control over functionality
+- **Comprehensive testing** - Extensive UI and accessibility testing
 
 ## ✨ **Features**
 
@@ -36,6 +40,39 @@ A Windows background service that automatically monitors your Downloads folder a
 - **Comprehensive Logging**: Detailed logs stored in `C:\ProgramData\HTMLConverter\logs\`
 - **Automatic Startup**: Service starts automatically on Windows boot
 - **CSS Styling Support**: Preserves colors, fonts, alignment, and formatting
+- **Extensive Testing**: Multi-browser UI testing, accessibility compliance, and performance validation
+- **Cross-Browser Compatibility**: Tested on Chrome, Firefox, and Edge
+- **Responsive Design Support**: Handles various screen sizes and layouts
+
+## 🧪 **Comprehensive Testing Suite**
+
+### **Extensive UI Testing**
+
+- **Multi-browser testing** (Chrome, Firefox, Edge)
+- **Responsive design validation** across different viewports
+- **Accessibility compliance testing** using axe-core
+- **Performance benchmarking** and memory profiling
+- **Cross-browser compatibility** verification
+- **Comprehensive HTML/CSS rendering** validation
+
+### **Test Categories**
+
+1. **Basic UI Elements** - HTML structure and formatting
+2. **Complex CSS Styling** - Modern CSS features and layouts
+3. **Responsive Design** - Multi-viewport testing (Desktop, Tablet, Mobile)
+4. **Typography & Text Effects** - Font styling and effects
+5. **Tables & Forms** - Complex data structures
+6. **Accessibility Testing** - WCAG 2.1 compliance
+7. **Performance Testing** - Memory and speed profiling
+8. **Cross-Browser Compatibility** - Chrome, Firefox, Edge
+
+### **Testing Environments**
+
+- **3 Python versions** (3.9, 3.10, 3.11)
+- **3 browsers** (Chrome, Firefox, Edge)
+- **4 viewports** (1920x1080, 1366x768, 768x1024, 375x667)
+- **Parallel execution** support
+- **Headless testing** for CI/CD compatibility
 
 ## Supported HTML Elements
 
@@ -45,6 +82,9 @@ A Windows background service that automatically monitors your Downloads folder a
 - Tables
 - Basic text formatting
 - Nested elements (div, span, section, article)
+- Forms and form elements
+- Images with alt text
+- Blockquotes and preformatted text
 
 ## CSS Styling Support
 
@@ -52,12 +92,16 @@ The converter preserves CSS styling including:
 
 - **Font properties**: size, weight (bold), style (italic), color
 - **Text alignment**: left, center, right, justify
-- **Text decoration**: underline
+- **Text decoration**: underline, line-through
 - **Line height**: spacing between lines
 - **Background colors**: for text elements
 - **Inline styles**: applied directly to elements
 - **Style tags**: CSS rules defined in `<style>` tags
 - **Color formats**: Hex colors (#RRGGBB) converted to RGB
+- **Gradient backgrounds**: Linear and radial gradients
+- **Box shadows**: Drop shadows and border effects
+- **CSS Grid and Flexbox**: Layout structures
+- **Media queries**: Responsive design elements
 
 ## 📋 **Requirements**
 
@@ -70,8 +114,15 @@ The converter preserves CSS styling including:
 ### **Python Version:**
 
 - Windows 10/11
-- Python 3.7 or higher
+- Python 3.9 or higher
 - Administrator privileges (for service installation)
+
+### **Testing Requirements:**
+
+- Python 3.9+ for running tests
+- Chrome, Firefox, or Edge browsers
+- Selenium WebDriver (automatically managed)
+- pytest and testing dependencies
 
 ## 🚀 **Installation**
 
@@ -135,32 +186,85 @@ The converter preserves CSS styling including:
    python html_to_docx_converter.py start
    ```
 
-## 🎯 **Usage**
-
-Once installed, the service runs automatically in the background. Simply:
-
-1. **Download any HTML file** to your Downloads folder
-2. The service will **automatically detect** the new file
-3. It will **convert it to DOCX** format with preserved styling
-4. The **original HTML file will be removed**
-5. The **DOCX file will be saved** in the same location
-
-### **Automatic Startup:**
-
-- ✅ **Service starts automatically** on Windows boot
-- ✅ **No user login required** - runs in background
-- ✅ **Always monitoring** Downloads folder
-- ✅ **Persists across restarts** and updates
-
 ## 🧪 **Testing**
 
-### **Standalone Version:**
+### **Running Tests**
+
+#### **Option 1: Using Test Runner Script**
+
+```bash
+# Run all tests
+python run_extensive_ui_tests.py
+
+# Run specific test types
+python run_extensive_ui_tests.py --test-type basic --browsers chrome
+python run_extensive_ui_tests.py --test-type accessibility
+python run_extensive_ui_tests.py --test-type performance --parallel
+
+# Run with specific browsers
+python run_extensive_ui_tests.py --browsers chrome,firefox,edge
+
+# Custom output file
+python run_extensive_ui_tests.py --output my-results.json
+```
+
+#### **Option 2: Using Windows Batch Script**
+
+```cmd
+# Run all tests
+run_extensive_ui_tests.bat
+
+# Run specific test types
+run_extensive_ui_tests.bat --test-type basic --browsers chrome
+
+# Run in parallel
+run_extensive_ui_tests.bat --parallel
+```
+
+#### **Option 3: Using pytest directly**
+
+```bash
+# Run all UI tests
+pytest tests/test_ui_extensive.py -v
+
+# Run specific test
+pytest tests/test_ui_extensive.py::TestExtensiveUI::test_basic_html_elements -v
+
+# Run with specific browser
+pytest tests/test_ui_extensive.py --browser=chrome -v
+
+# Run accessibility tests
+pytest tests/test_accessibility.py -v
+
+# Generate HTML report
+pytest tests/test_ui_extensive.py --html=reports/my-report.html --self-contained-html
+```
+
+### **Test Reports**
+
+The testing suite generates comprehensive reports:
+
+- **HTML reports** with screenshots and detailed results
+- **JSON results** for programmatic analysis
+- **GitHub Actions artifacts** for easy access
+- **Performance metrics** and memory profiling
+- **Accessibility compliance** reports
+
+### **GitHub Actions Integration**
+
+Tests automatically run on:
+
+- Every push to `main` or `develop` branches
+- Every pull request
+- Manual workflow dispatch with test type selection
+
+### **Standalone Version Testing:**
 
 1. **Right-click** `test_converter.bat`
 2. **Select "Run as administrator"**
 3. This will create a sample HTML file and convert it to DOCX
 
-### **Python Version:**
+### **Python Version Testing:**
 
 1. Run the test script:
 
@@ -287,6 +391,25 @@ Check this file if you encounter any issues or want to see conversion history.
 2. Check Windows Defender settings
 3. Verify Downloads folder permissions
 
+### **Testing Issues**
+
+1. **Browser Driver Issues**:
+
+   ```bash
+   pip install webdriver-manager --upgrade
+   ```
+
+2. **Memory Issues**:
+
+   ```bash
+   python run_extensive_ui_tests.py --parallel --max-workers 2
+   ```
+
+3. **Permission Issues**:
+   ```bash
+   chmod +x run_extensive_ui_tests.py  # Linux/macOS
+   ```
+
 ## 📁 **File Structure**
 
 ### **Complete Project:**
@@ -303,8 +426,21 @@ converter/
 ├── uninstall_standalone.bat     # Standalone version uninstaller
 ├── configure_startup.bat        # Startup configuration
 ├── test_converter.py            # Test script
+├── run_extensive_ui_tests.py    # Extensive UI test runner
+├── run_extensive_ui_tests.bat   # Windows test runner
+├── pytest.ini                   # Pytest configuration
+├── tests/                       # Test suite
+│   ├── test_ui_extensive.py     # Comprehensive UI tests
+│   ├── test_accessibility.py    # Accessibility tests
+│   └── test_converter.py        # Unit tests
+├── .github/workflows/           # GitHub Actions
+│   ├── ci.yml                   # Continuous integration
+│   ├── test.yml                 # Unit and integration tests
+│   └── extensive-ui-tests.yml   # Extensive UI testing
 ├── README.md                    # This file
-└── README_STANDALONE.md         # Standalone version documentation
+├── README_STANDALONE.md         # Standalone version documentation
+├── EXTENSIVE_UI_TESTING.md      # Comprehensive testing documentation
+└── BUILD_STANDALONE.md          # Standalone build documentation
 ```
 
 ### **After Building Standalone:**
@@ -327,6 +463,15 @@ dist/
 - **Service Framework**: Uses `pywin32` for Windows service functionality
 - **Logging**: Comprehensive logging with file and console output
 
+### **Testing Technologies:**
+
+- **Selenium WebDriver**: Browser automation for UI testing
+- **pytest**: Testing framework with extensive plugin support
+- **axe-selenium-python**: Accessibility testing with axe-core
+- **webdriver-manager**: Automatic browser driver management
+- **pytest-html**: HTML test reporting
+- **pytest-xdist**: Parallel test execution
+
 ### **Standalone Build:**
 
 - **PyInstaller**: Packages Python interpreter and all dependencies
@@ -341,10 +486,39 @@ dist/
 - **System Service**: Runs with system privileges
 - **No External Dependencies**: Everything is self-contained
 - **No Data Collection**: No information is sent anywhere
+- **Input Validation**: Sanitizes HTML input to prevent XSS
+- **Path Validation**: Prevents path traversal attacks
+
+## 📊 **Quality Assurance**
+
+### **Testing Coverage**
+
+- **Unit Tests**: Core functionality testing
+- **Integration Tests**: End-to-end workflow testing
+- **UI Tests**: Browser-based rendering validation
+- **Accessibility Tests**: WCAG 2.1 compliance
+- **Performance Tests**: Memory and speed profiling
+- **Cross-Browser Tests**: Chrome, Firefox, Edge compatibility
+- **Security Tests**: Input validation and sanitization
+
+### **Continuous Integration**
+
+- **Automated Testing**: Runs on every commit and pull request
+- **Multi-Environment**: Tests across Python versions and browsers
+- **Parallel Execution**: Fast test execution with parallel processing
+- **Comprehensive Reporting**: Detailed test results and artifacts
+- **Quality Gates**: Prevents merging with failing tests
 
 ## 📄 **License**
 
 This project is provided as-is for personal use. Feel free to modify and distribute as needed.
+
+## 📚 **Documentation**
+
+- **[README.md](README.md)** - Main documentation (this file)
+- **[README_STANDALONE.md](README_STANDALONE.md)** - Standalone version guide
+- **[EXTENSIVE_UI_TESTING.md](EXTENSIVE_UI_TESTING.md)** - Comprehensive testing documentation
+- **[BUILD_STANDALONE.md](BUILD_STANDALONE.md)** - Standalone build guide
 
 ---
 
@@ -358,9 +532,15 @@ This project is provided as-is for personal use. Feel free to modify and distrib
 
 ### **For Developers (Python):**
 
-1. Install Python 3.7+
+1. Install Python 3.9+
 2. Run `install_service.bat` as administrator
 3. Service starts automatically on boot
+
+### **For Testing:**
+
+1. Install dependencies: `pip install -r requirements.txt`
+2. Run tests: `python run_extensive_ui_tests.py`
+3. View reports in `reports/` directory
 
 ### **For Distribution:**
 

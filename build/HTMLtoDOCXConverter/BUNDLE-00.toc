@@ -1,0 +1,3 @@
+([('HTMLtoDOCXConverter',
+   '/Users/sk.samar/Desktop/Development/converter/dist/HTMLtoDOCXConverter',
+   'EXECUTABLE')],)

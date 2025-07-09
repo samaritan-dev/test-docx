@@ -412,48 +412,54 @@ if __name__ == '__main__':
         print("HTML to DOCX Converter - Test Mode")
         print("=" * 40)
         
-        # Import test function
-        try:
-            from test_converter import test_conversion
-            success = test_conversion()
-            
-            print("\n" + "=" * 40)
-            if success:
-                print("✓ Test completed successfully!")
-                print("The converter is working correctly.")
-            else:
-                print("✗ Test failed!")
-                print("Please check the logs for more details.")
-        except ImportError:
-            print("Test module not found. Running basic test...")
-            # Basic test without external module
-            converter = HTMLToDOCXConverter()
-            test_html = """
+        # Basic test without external dependencies
+        converter = HTMLToDOCXConverter()
+        test_html = """
 <!DOCTYPE html>
 <html>
-<head><title>Test</title></head>
+<head><title>Standalone Test</title></head>
 <body>
 <h1>Test Document</h1>
 <p>This is a test paragraph with <strong>bold</strong> and <em>italic</em> text.</p>
+<ul>
+    <li>List item 1</li>
+    <li>List item 2</li>
+</ul>
+<table border="1">
+    <tr><th>Header</th><th>Value</th></tr>
+    <tr><td>Test</td><td>Success</td></tr>
+</table>
 </body>
 </html>
-            """
-            downloads_path = Path(converter.downloads_path)
-            test_file = downloads_path / "standalone_test.html"
-            
-            try:
-                with open(test_file, 'w', encoding='utf-8') as f:
-                    f.write(test_html.strip())
-                
-                success = converter.convert_html_to_docx(str(test_file))
-                if success:
-                    print("✓ Basic test successful!")
-                else:
-                    print("✗ Basic test failed!")
-            except Exception as e:
-                print(f"✗ Test error: {e}")
+        """
+        downloads_path = Path(converter.downloads_path)
+        test_file = downloads_path / "standalone_test.html"
         
-        input("\nPress Enter to exit...")
+        try:
+            print("Creating test HTML file...")
+            with open(test_file, 'w', encoding='utf-8') as f:
+                f.write(test_html.strip())
+            
+            print("Converting HTML to DOCX...")
+            success = converter.convert_html_to_docx(str(test_file))
+            
+            if success:
+                docx_path = test_file.with_suffix('.docx')
+                if docx_path.exists():
+                    print("✓ Test completed successfully!")
+                    print(f"✓ DOCX file created: {docx_path.name}")
+                    print("✓ Original HTML file removed")
+                    print("\nThe converter is working correctly!")
+                else:
+                    print("✗ Test failed: DOCX file not found")
+            else:
+                print("✗ Test failed: Conversion unsuccessful")
+                
+        except Exception as e:
+            print(f"✗ Test error: {e}")
+        
+        print("\nPress Enter to exit...")
+        input()
     else:
         # Run as Windows service
         win32serviceutil.HandleCommandLine(HTMLConverterService) 

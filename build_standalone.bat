@@ -16,9 +16,19 @@ echo Python found. Building standalone executable...
 echo.
 
 REM Run the build script
-python build_exe.py
+python build_standalone.py
 
 echo.
 echo Build process completed!
+echo.
+echo Files created in dist/ folder:
+echo - HTMLtoDOCXConverter.exe (standalone executable)
+echo - install.bat (pure batch installer)
+echo - uninstall.bat (pure batch uninstaller)
+echo - test.bat (test script)
+echo - README_STANDALONE.txt (instructions)
+echo.
+echo These files can be distributed to ANY Windows system
+echo without requiring Python or any dependencies!
 echo.
 pause 
