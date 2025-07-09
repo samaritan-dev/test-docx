@@ -1,0 +1,318 @@
+name: HTML to DOCX Converter CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  release:
+    types: [published]
+
+env:
+  PYTHON_VERSION: "3.9"
+  WINDOWS_VERSION: "windows-latest"
+
+jobs:
+  # Python Version Tests
+  python-tests:
+    name: Python Version Tests
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, "3.10", "3.11"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov flake8 black
+
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Format check with black
+        run: |
+          black --check --diff .
+
+      - name: Run Python tests
+        run: |
+          pytest test_converter.py -v --cov=html_to_docx_converter --cov-report=xml --cov-report=html
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: python
+          name: python-coverage
+
+  # Windows Tests
+  windows-tests:
+    name: Windows Tests
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+
+      - name: Run Windows-specific tests
+        run: |
+          python test_converter.py
+
+      - name: Test service installation (without actually installing)
+        run: |
+          python -c "import win32serviceutil; print('Windows service utilities available')"
+
+  # Standalone Build Tests
+  standalone-build:
+    name: Build Standalone Executable
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build standalone executable
+        run: |
+          python build_exe.py
+
+      - name: Verify executable was created
+        run: |
+          if (Test-Path "dist/HTMLtoDOCXConverter.exe") {
+            Write-Host "✅ Standalone executable created successfully"
+            Get-Item "dist/HTMLtoDOCXConverter.exe" | Select-Object Name, Length
+          } else {
+            Write-Host "❌ Standalone executable not found"
+            exit 1
+          }
+
+      - name: Upload standalone executable
+        uses: actions/upload-artifact@v3
+        with:
+          name: standalone-executable
+          path: dist/
+          retention-days: 30
+
+  # Integration Tests
+  integration-tests:
+    name: Integration Tests
+    runs-on: windows-latest
+    needs: [python-tests, standalone-build]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Download standalone executable
+        uses: actions/download-artifact@v3
+        with:
+          name: standalone-executable
+
+      - name: Run integration tests
+        run: |
+          python -c "
+          import os
+          import tempfile
+          from pathlib import Path
+          from html_to_docx_converter import HTMLToDOCXConverter
+
+          print('🧪 Running integration tests...')
+
+          # Test 1: Basic HTML conversion
+          converter = HTMLToDOCXConverter()
+          test_html = '''
+          <!DOCTYPE html>
+          <html>
+          <head><title>Integration Test</title></head>
+          <body>
+          <h1>Test Document</h1>
+          <p>This is a test paragraph with <strong>bold</strong> and <em>italic</em> text.</p>
+          <ul><li>List item 1</li><li>List item 2</li></ul>
+          </body>
+          </html>
+          '''
+
+          downloads_path = Path(converter.downloads_path)
+          test_file = downloads_path / 'integration_test.html'
+
+          try:
+              with open(test_file, 'w', encoding='utf-8') as f:
+                  f.write(test_html.strip())
+              
+              success = converter.convert_html_to_docx(str(test_file))
+              if success:
+                  print('✅ Basic HTML conversion test passed')
+              else:
+                  print('❌ Basic HTML conversion test failed')
+                  exit(1)
+                  
+          except Exception as e:
+              print(f'❌ Integration test error: {e}')
+              exit(1)
+          "
+
+  # Security Scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install security tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit safety
+
+      - name: Run security scan
+        run: |
+          bandit -r . -f json -o bandit-report.json || true
+          safety check --json --output safety-report.json || true
+
+      - name: Upload security reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: |
+            bandit-report.json
+            safety-report.json
+          retention-days: 30
+
+  # Documentation Check
+  docs-check:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check README exists
+        run: |
+          if [ -f "README.md" ]; then
+            echo "✅ README.md exists"
+          else
+            echo "❌ README.md missing"
+            exit 1
+          fi
+
+      - name: Check standalone README exists
+        run: |
+          if [ -f "README_STANDALONE.md" ]; then
+            echo "✅ README_STANDALONE.md exists"
+          else
+            echo "❌ README_STANDALONE.md missing"
+            exit 1
+          fi
+
+      - name: Validate markdown
+        run: |
+          pip install markdown-link-check
+          markdown-link-check README.md
+          markdown-link-check README_STANDALONE.md
+
+  # Release Build
+  release-build:
+    name: Release Build
+    runs-on: windows-latest
+    if: github.event_name == 'release'
+    needs: [python-tests, windows-tests, integration-tests, security-scan]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build release executable
+        run: |
+          python build_exe.py
+
+      - name: Create release package
+        run: |
+          $version = $env:GITHUB_REF_NAME
+          $releaseDir = "release-v$version"
+          New-Item -ItemType Directory -Path $releaseDir
+
+          Copy-Item "dist/*" $releaseDir/
+          Copy-Item "README.md" $releaseDir/
+          Copy-Item "README_STANDALONE.md" $releaseDir/
+          Copy-Item "LICENSE" $releaseDir/ -ErrorAction SilentlyContinue
+
+          Compress-Archive -Path "$releaseDir/*" -DestinationPath "HTMLtoDOCXConverter-v$version.zip"
+
+      - name: Upload release assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./HTMLtoDOCXConverter-v${{ github.event.release.tag_name }}.zip
+          asset_name: HTMLtoDOCXConverter-v${{ github.event.release.tag_name }}.zip
+          asset_content_type: application/zip

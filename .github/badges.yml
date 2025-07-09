@@ -1,0 +1,46 @@
+# GitHub Badges Configuration
+# Add these badges to your README.md
+
+badges:
+  - name: "Build Status"
+    url: "https://github.com/samaritan-dev/test-docx/actions/workflows/ci.yml/badge.svg"
+    alt: "Build Status"
+
+  - name: "Test Status"
+    url: "https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml/badge.svg"
+    alt: "Test Status"
+
+  - name: "Python Version"
+    url: "https://img.shields.io/badge/python-3.8%2B-blue.svg"
+    alt: "Python 3.8+"
+
+  - name: "Platform"
+    url: "https://img.shields.io/badge/platform-Windows-lightgrey.svg"
+    alt: "Windows"
+
+  - name: "License"
+    url: "https://img.shields.io/badge/license-MIT-green.svg"
+    alt: "MIT License"
+
+  - name: "Code Coverage"
+    url: "https://codecov.io/gh/samaritan-dev/test-docx/branch/main/graph/badge.svg"
+    alt: "Code Coverage"
+
+  - name: "Security"
+    url: "https://img.shields.io/badge/security-scanned-brightgreen.svg"
+    alt: "Security Scanned"
+
+  - name: "Standalone"
+    url: "https://img.shields.io/badge/standalone-executable-orange.svg"
+    alt: "Standalone Executable"
+
+# Markdown format for badges:
+markdown_badges: |
+  [![Build Status](https://github.com/samaritan-dev/test-docx/actions/workflows/ci.yml/badge.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/ci.yml)
+  [![Test Status](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml/badge.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml)
+  [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
+  [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://www.microsoft.com/windows)
+  [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+  [![Code Coverage](https://codecov.io/gh/samaritan-dev/test-docx/branch/main/graph/badge.svg)](https://codecov.io/gh/samaritan-dev/test-docx)
+  [![Security](https://img.shields.io/badge/security-scanned-brightgreen.svg)](https://github.com/samaritan-dev/test-docx/actions/workflows/test.yml)
+  [![Standalone](https://img.shields.io/badge/standalone-executable-orange.svg)](README_STANDALONE.md)

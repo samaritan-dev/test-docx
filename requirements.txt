@@ -1,6 +1,23 @@
+# Core dependencies
 watchdog==3.0.0
 python-docx==0.8.11
 beautifulsoup4==4.12.2
 lxml==4.9.3
 pywin32==306
-psutil==5.9.6 
+psutil==5.9.6
+
+# Testing dependencies
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+selenium==4.15.2
+webdriver-manager==4.0.1
+
+# Code quality
+flake8==6.1.0
+black==23.11.0
+bandit==1.7.5
+safety==2.3.5
+
+# Build dependencies
+pyinstaller==6.2.0 
